@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchAccountByRiotId, fetchSummonerByPuuid } from '../utils/network/riot-api-requests';
-import { PLATFORM_REGION_TO_REGIONAL_ROUTE } from '../utils/network/riot-api-requests';
+import { 
+  PLATFORM_REGION_TO_REGIONAL_ROUTE,
+  fetchAccountByRiotId, 
+  fetchSummonerByPuuid,
+  fetchMatchIdsByPuuid,
+  fetchMatchById,
+  fetchMatchTimelineById,
+} from '../utils/network/riot-api-requests';
 
 const RIOT_API_KEY = process.env.REACT_APP_RIOT_API_KEY;
 
@@ -24,6 +30,29 @@ export default function ApiTest() {
     queryKey: ['summonerByPuuid', platformRegion, accountQuery.data?.puuid],
     queryFn: () => fetchSummonerByPuuid({ platformRegion, puuid: accountQuery.data.puuid }),
     enabled: Boolean(accountQuery.data?.puuid),
+    retry: false,
+  });
+
+  const matchIdsQuery = useQuery({
+    queryKey: ['matchIdsByPuuid', regionalRoute, accountQuery.data?.puuid],
+    queryFn: () => fetchMatchIdsByPuuid({ regionalRoute, puuid: accountQuery.data.puuid, start: 0, count: 5 }),
+    enabled: Boolean(accountQuery.data?.puuid),
+    retry: false,
+  });
+
+  const latestMatchId = matchIdsQuery.data?.[0];
+
+  const matchQuery = useQuery({
+    queryKey: ['matchById', regionalRoute, latestMatchId],
+    queryFn: () => fetchMatchById({ regionalRoute, matchId: latestMatchId }),
+    enabled: Boolean(latestMatchId),
+    retry: false,
+  });
+
+  const timelineQuery = useQuery({
+    queryKey: ['matchTimelineById', regionalRoute, latestMatchId],
+    queryFn: () => fetchMatchTimelineById({ regionalRoute, matchId: latestMatchId }),
+    enabled: Boolean(latestMatchId),
     retry: false,
   });
 
@@ -68,9 +97,12 @@ export default function ApiTest() {
         </p>
       )}
 
-      {(accountQuery.isFetching || summonerQuery.isFetching) && <p>Loading...</p>}
+      {(accountQuery.isFetching || summonerQuery.isFetching || matchIdsQuery.isFetching || matchQuery.isFetching || timelineQuery.isFetching) && <p>Loading...</p>}
       {accountQuery.error && <p style={{ color: 'crimson' }}>{String(accountQuery.error.message || accountQuery.error)}</p>}
       {summonerQuery.error && <p style={{ color: 'crimson' }}>{String(summonerQuery.error.message || summonerQuery.error)}</p>}
+      {matchIdsQuery.error && <p style={{ color: 'crimson' }}>{String(matchIdsQuery.error.message || matchIdsQuery.error)}</p>}
+      {matchQuery.error && <p style={{ color: 'crimson' }}>{String(matchQuery.error.message || matchQuery.error)}</p>}
+      {timelineQuery.error && <p style={{ color: 'crimson' }}>{String(timelineQuery.error.message || timelineQuery.error)}</p>}
 
       {accountQuery.data && (
         <div style={{ marginTop: 16 }}>
@@ -93,6 +125,33 @@ export default function ApiTest() {
   profileIconId: summonerQuery.data.profileIconId,
   summonerLevel: summonerQuery.data.summonerLevel,
 }, null, 2)}
+          </pre>
+        </div>
+      )}
+
+      {Array.isArray(matchIdsQuery.data) && matchIdsQuery.data.length > 0 && (
+        <div style={{ marginTop: 16 }}>
+          <h2>Recent Match IDs</h2>
+          <pre style={{ background: '#111', color: '#eee', padding: 12, borderRadius: 8, overflowX: 'auto' }}>
+{JSON.stringify(matchIdsQuery.data, null, 2)}
+          </pre>
+        </div>
+      )}
+
+      {matchQuery.data && (
+        <div style={{ marginTop: 16 }}>
+          <h2>Latest Match</h2>
+          <pre style={{ background: '#111', color: '#eee', padding: 12, borderRadius: 8, overflowX: 'auto' }}>
+{JSON.stringify(matchQuery.data, null, 2)}
+          </pre>
+        </div>
+      )}
+
+      {timelineQuery.data && (
+        <div style={{ marginTop: 16 }}>
+          <h2>Latest Match Timeline</h2>
+          <pre style={{ background: '#111', color: '#eee', padding: 12, borderRadius: 8, overflowX: 'auto' }}>
+{JSON.stringify(timelineQuery.data, null, 2)}
           </pre>
         </div>
       )}
