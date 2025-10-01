@@ -1,50 +1,9 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { fetchAccountByRiotId, fetchSummonerByPuuid } from '../utils/network/riot-api-requests';
+import { PLATFORM_REGION_TO_REGIONAL_ROUTE } from '../utils/network/riot-api-requests';
 
 const RIOT_API_KEY = process.env.REACT_APP_RIOT_API_KEY;
-
-const PLATFORM_REGION_TO_REGIONAL_ROUTE = {
-  na1: 'americas',
-  la1: 'americas',
-  la2: 'americas',
-  br1: 'americas',
-  oce: 'americas',
-  oc1: 'americas',
-  euw1: 'europe',
-  eun1: 'europe',
-  tr1: 'europe',
-  ru: 'europe',
-  kr: 'asia',
-  jp1: 'asia',
-};
-
-async function fetchAccountByRiotId({ regionalRoute, gameName, tagLine }) {
-  if (!RIOT_API_KEY) {
-    throw new Error('Missing REACT_APP_RIOT_API_KEY environment variable.');
-  }
-  const encodedGameName = encodeURIComponent(gameName.trim());
-  const encodedTag = encodeURIComponent(tagLine.trim());
-  const url = `https://${regionalRoute}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodedGameName}/${encodedTag}`;
-  const res = await fetch(url, { headers: { 'X-Riot-Token': RIOT_API_KEY } });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Account API ${res.status}: ${text || res.statusText}`);
-  }
-  return res.json();
-}
-
-async function fetchSummonerByPuuid({ platformRegion, puuid }) {
-  if (!RIOT_API_KEY) {
-    throw new Error('Missing REACT_APP_RIOT_API_KEY environment variable.');
-  }
-  const url = `https://${platformRegion}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${encodeURIComponent(puuid)}`;
-  const res = await fetch(url, { headers: { 'X-Riot-Token': RIOT_API_KEY } });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Summoner API ${res.status}: ${text || res.statusText}`);
-  }
-  return res.json();
-}
 
 export default function ApiTest() {
   const [platformRegion, setPlatformRegion] = useState('oc1');
