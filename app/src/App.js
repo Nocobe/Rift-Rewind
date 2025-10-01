@@ -3,6 +3,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import About from './pages/About';
 import PlayerDetails from './pages/PlayerDetails';
+import ApiTest from './pages/ApiTest';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <div className="Links">
           <Link to="/">Home</Link>
           <Link to="/about">About</Link>
+          <Link to="/api-test">API Test</Link>
         </div>
       </nav>
       <main className="MainContent">
@@ -19,6 +21,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/player/:id" element={<PlayerDetails />} />
+          <Route path="/api-test" element={<ApiTest />} />
         </Routes>
       </main>
     </div>

@@ -2,6 +2,16 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Riot API setup
+
+To use the API test page, create a `.env` file in the `app` folder with your Riot API key:
+
+```
+REACT_APP_RIOT_API_KEY=your_riot_api_key_here
+```
+
+Restart the dev server after changing env vars. Then open the app and navigate to `http://localhost:3000/api-test` to search by summoner name. The page calls the Summoner V4 endpoint documented at the Riot Developer APIs.
+
 ## Available Scripts
 
 In the project directory, you can run:
