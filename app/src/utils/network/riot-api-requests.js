@@ -22,7 +22,7 @@ async function fetchAccountByRiotId({ regionalRoute, gameName, tagLine }) {
     const res = await buildFetch(url, {});
     return res;
 }
-  
+
 async function fetchSummonerByPuuid({ platformRegion, puuid }) {
     const url = `https://${platformRegion}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${encodeURIComponent(puuid)}`;
     const res = await buildFetch(url, {});
