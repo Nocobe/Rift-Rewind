@@ -5,7 +5,7 @@ import {
   fetchAccountByRiotId,
   fetchSummonerByPuuid,
   fetchMatchIdsByPuuid,
-  fetchMatchById,
+  fetchTopChampionMasteriesByPuuid,
 } from '../utils/network/riot-api-requests';
 import { Box, Button, Card, CardContent, Container, Fade, Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
 
@@ -39,12 +39,10 @@ function Home() {
     retry: false,
   });
 
-  const latestMatchId = matchIdsQuery.data?.[0];
-
-  const matchQuery = useQuery({
-    queryKey: ['home.matchById', regionalRoute, latestMatchId],
-    queryFn: () => fetchMatchById({ regionalRoute, matchId: latestMatchId }),
-    enabled: Boolean(latestMatchId),
+  const topMasteriesQuery = useQuery({
+    queryKey: ['home.topMasteriesByPuuid', platformRegion, accountQuery.data?.puuid],
+    queryFn: () => fetchTopChampionMasteriesByPuuid({ platformRegion, puuid: accountQuery.data.puuid, count: 3 }),
+    enabled: Boolean(accountQuery.data?.puuid),
     retry: false,
   });
 
@@ -108,11 +106,20 @@ function Home() {
 
         <Card variant="outlined" sx={{ mb: 3 }}>
           <CardContent>
-            <Typography variant="h6" gutterBottom>Top three champ</Typography>
-            {matchQuery.isFetching && <Typography>Loading latest match...</Typography>}
-            {matchQuery.error && <Typography color="error">{String(matchQuery.error.message || matchQuery.error)}</Typography>}
-            {matchQuery.data && (
-              <Typography variant="body2">Latest match ID: {latestMatchId}</Typography>
+            <Typography variant="h6" gutterBottom>Top three champions</Typography>
+            {topMasteriesQuery.isFetching && <Typography>Loading top champion masteries...</Typography>}
+            {topMasteriesQuery.error && <Typography color="error">{String(topMasteriesQuery.error.message || topMasteriesQuery.error)}</Typography>}
+            {Array.isArray(topMasteriesQuery.data) && topMasteriesQuery.data.length === 0 && (
+              <Typography variant="body2">No champion masteries found.</Typography>
+            )}
+            {Array.isArray(topMasteriesQuery.data) && topMasteriesQuery.data.length > 0 && (
+              <Box>
+                {topMasteriesQuery.data.slice(0, 3).map((m) => (
+                  <Typography key={m.championId} variant="body2">
+                    Champion {m.championId} · Level {m.championLevel} · {m.championPoints.toLocaleString()} pts
+                  </Typography>
+                ))}
+              </Box>
             )}
           </CardContent>
         </Card>

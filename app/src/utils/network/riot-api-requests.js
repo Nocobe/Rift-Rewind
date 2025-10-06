@@ -50,6 +50,15 @@ async function fetchMatchTimelineById({ regionalRoute, matchId }) {
     return res; // timeline DTO
 }
 
+// League of Legends Champion Mastery - get top champion masteries by PUUID
+// Docs: https://developer.riotgames.com/apis#champion-mastery-v4/GET_getTopChampionMasteriesByPUUID
+async function fetchTopChampionMasteriesByPuuid({ platformRegion, puuid, count = 3 }) {
+    const params = new URLSearchParams({ count: String(count) });
+    const url = `https://${platformRegion}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${encodeURIComponent(puuid)}/top?${params.toString()}`;
+    const res = await buildFetch(url, {});
+    return res; // array of ChampionMasteryDTO
+}
+
 export { 
   PLATFORM_REGION_TO_REGIONAL_ROUTE,
   fetchAccountByRiotId, 
@@ -57,4 +66,5 @@ export {
   fetchMatchIdsByPuuid,
   fetchMatchById,
   fetchMatchTimelineById,
+  fetchTopChampionMasteriesByPuuid,
 };
