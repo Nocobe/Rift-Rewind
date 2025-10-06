@@ -18,6 +18,27 @@ function Home() {
   const regionalRoute = PLATFORM_REGION_TO_REGIONAL_ROUTE[platformRegion] || 'americas';
   const showResults = submitted.gameName.length > 0 && submitted.tagLine.length > 0;
 
+  // Styling tokens (match index.css CSS variables)
+  const panelSx = { background: 'var(--panel)', borderColor: 'var(--panel-border)', backdropFilter: 'blur(6px)' };
+  const headingSx = { color: 'var(--gold)', fontWeight: 700, letterSpacing: 0.2 };
+  const inputSx = {
+    '& .MuiOutlinedInput-root': {
+      background: 'rgba(255,255,255,0.04)',
+      color: '#e6e8eb',
+      '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+      '&:hover fieldset': { borderColor: 'var(--gold)' },
+      '&.Mui-focused fieldset': { borderColor: 'var(--gold-strong)' },
+    },
+    '& .MuiInputLabel-root': { color: 'rgba(230,232,235,0.8)' },
+    '& .MuiSvgIcon-root': { color: '#e6e8eb' },
+  };
+  const buttonSx = {
+    backgroundColor: 'var(--gold)',
+    color: '#0b1f3d',
+    fontWeight: 700,
+    '&:hover': { backgroundColor: 'var(--gold-strong)' },
+  };
+
   const accountQuery = useQuery({
     queryKey: ['home.accountByRiotId', regionalRoute, submitted.gameName, submitted.tagLine],
     queryFn: () => fetchAccountByRiotId({ regionalRoute, gameName: submitted.gameName, tagLine: submitted.tagLine }),
@@ -58,7 +79,7 @@ function Home() {
       }}>
       <Grid container spacing={2} justifyContent="center" alignItems="center">
         <Grid item xs={12} sm={4} md={3}>
-          <Select fullWidth value={platformRegion} onChange={(e) => setPlatformRegion(e.target.value)} displayEmpty>
+          <Select fullWidth value={platformRegion} onChange={(e) => setPlatformRegion(e.target.value)} displayEmpty sx={inputSx}>
             <MenuItem value="na1">NA1</MenuItem>
             <MenuItem value="euw1">EUW1</MenuItem>
             <MenuItem value="eun1">EUN1</MenuItem>
@@ -73,13 +94,13 @@ function Home() {
           </Select>
         </Grid>
         <Grid item xs={12} sm={6} md={6}>
-          <TextField fullWidth label="Player name" placeholder="gameName (e.g. Faker)" value={gameName} onChange={(e) => setGameName(e.target.value)} />
+          <TextField fullWidth label="Player name" placeholder="gameName (e.g. Faker)" value={gameName} onChange={(e) => setGameName(e.target.value)} sx={inputSx} />
         </Grid>
         <Grid item xs={12} sm={4} md={3}>
-          <TextField fullWidth label="Tag" placeholder="tagLine (e.g. KR1)" value={tagLine} onChange={(e) => setTagLine(e.target.value)} />
+          <TextField fullWidth label="Tag" placeholder="tagLine (e.g. KR1)" value={tagLine} onChange={(e) => setTagLine(e.target.value)} sx={inputSx} />
         </Grid>
         <Grid item xs={12} sm={'auto'}>
-          <Button variant="contained" onClick={onSearch} disabled={!gameName.trim() || !tagLine.trim()}>
+          <Button variant="contained" onClick={onSearch} disabled={!gameName.trim() || !tagLine.trim()} sx={buttonSx}>
             Search
           </Button>
         </Grid>
@@ -88,9 +109,9 @@ function Home() {
 
       <Fade in={showResults} timeout={1000}>
       <Box sx={{ mt: 4 }}>
-        <Card variant="outlined" sx={{ mb: 3 }}>
+        <Card variant="outlined" sx={{ mb: 3, ...panelSx }}>
           <CardContent>
-            <Typography variant="h6" gutterBottom>Player Info</Typography>
+            <Typography variant="h6" gutterBottom sx={headingSx}>Player Info</Typography>
             {accountQuery.isFetching && <Typography>Loading account...</Typography>}
             {accountQuery.error && <Typography color="error">{String(accountQuery.error.message || accountQuery.error)}</Typography>}
             {accountQuery.data && (
@@ -104,9 +125,9 @@ function Home() {
           </CardContent>
         </Card>
 
-        <Card variant="outlined" sx={{ mb: 3 }}>
+        <Card variant="outlined" sx={{ mb: 3, ...panelSx }}>
           <CardContent>
-            <Typography variant="h6" gutterBottom>Top three champions</Typography>
+            <Typography variant="h6" gutterBottom sx={headingSx}>Top three champions</Typography>
             {topMasteriesQuery.isFetching && <Typography>Loading top champion masteries...</Typography>}
             {topMasteriesQuery.error && <Typography color="error">{String(topMasteriesQuery.error.message || topMasteriesQuery.error)}</Typography>}
             {Array.isArray(topMasteriesQuery.data) && topMasteriesQuery.data.length === 0 && (
@@ -124,9 +145,9 @@ function Home() {
           </CardContent>
         </Card>
 
-        <Card variant="outlined">
+        <Card variant="outlined" sx={panelSx}>
           <CardContent>
-            <Typography variant="h6" gutterBottom>Last three matches</Typography>
+            <Typography variant="h6" gutterBottom sx={headingSx}>Last three matches</Typography>
             {matchIdsQuery.isFetching && <Typography>Loading recent matches...</Typography>}
             {matchIdsQuery.error && <Typography color="error">{String(matchIdsQuery.error.message || matchIdsQuery.error)}</Typography>}
             {Array.isArray(matchIdsQuery.data) && matchIdsQuery.data.length === 0 && (

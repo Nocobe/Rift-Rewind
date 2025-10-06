@@ -5,9 +5,22 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: radial-gradient(1200px circle at 20% -10%, #0b2447 0%, rgba(11,36,71,0) 60%),
+              linear-gradient(180deg, #061325 0%, #0a1a33 60%, #0b1f3d 100%);
+  color: #e6e8eb;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+:root {
+  --gold: #c8aa6e;
+  --gold-strong: #d4b170;
+  --blue-900: #0a1a33;
+  --blue-800: #0c254a;
+  --blue-700: #10335f;
+  --panel: rgba(8, 20, 38, 0.8);
+  --panel-border: rgba(200, 170, 110, 0.35);
 }
