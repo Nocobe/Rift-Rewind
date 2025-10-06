@@ -109,13 +109,10 @@ function Home() {
         <Card variant="outlined" sx={{ mb: 3 }}>
           <CardContent>
             <Typography variant="h6" gutterBottom>Top three champ</Typography>
-            {matchIdsQuery.isFetching && <Typography>Loading recent matches...</Typography>}
-            {matchIdsQuery.error && <Typography color="error">{String(matchIdsQuery.error.message || matchIdsQuery.error)}</Typography>}
-            {Array.isArray(matchIdsQuery.data) && matchIdsQuery.data.length === 0 && (
-              <Typography variant="body2">No recent matches.</Typography>
-            )}
-            {Array.isArray(matchIdsQuery.data) && matchIdsQuery.data.length > 0 && (
-              <Typography variant="body2">Recent match IDs: {matchIdsQuery.data.slice(0, 3).join(', ')}</Typography>
+            {matchQuery.isFetching && <Typography>Loading latest match...</Typography>}
+            {matchQuery.error && <Typography color="error">{String(matchQuery.error.message || matchQuery.error)}</Typography>}
+            {matchQuery.data && (
+              <Typography variant="body2">Latest match ID: {latestMatchId}</Typography>
             )}
           </CardContent>
         </Card>
@@ -123,10 +120,13 @@ function Home() {
         <Card variant="outlined">
           <CardContent>
             <Typography variant="h6" gutterBottom>Last three matches</Typography>
-            {matchQuery.isFetching && <Typography>Loading latest match...</Typography>}
-            {matchQuery.error && <Typography color="error">{String(matchQuery.error.message || matchQuery.error)}</Typography>}
-            {matchQuery.data && (
-              <Typography variant="body2">Latest match ID: {latestMatchId}</Typography>
+            {matchIdsQuery.isFetching && <Typography>Loading recent matches...</Typography>}
+            {matchIdsQuery.error && <Typography color="error">{String(matchIdsQuery.error.message || matchIdsQuery.error)}</Typography>}
+            {Array.isArray(matchIdsQuery.data) && matchIdsQuery.data.length === 0 && (
+              <Typography variant="body2">No recent matches.</Typography>
+            )}
+            {Array.isArray(matchIdsQuery.data) && matchIdsQuery.data.length > 0 && (
+              <Typography variant="body2">Recent match IDs: {matchIdsQuery.data.slice(0, 3).join(', ')}</Typography>
             )}
           </CardContent>
         </Card>
