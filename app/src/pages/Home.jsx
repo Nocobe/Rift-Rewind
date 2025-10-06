@@ -6,6 +6,7 @@ import {
   fetchSummonerByPuuid,
   fetchMatchIdsByPuuid,
   fetchTopChampionMasteriesByPuuid,
+  fetchChampionIdToNameMap,
 } from '../utils/network/riot-api-requests';
 import { Box, Button, Card, CardContent, Container, Fade, Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
 
@@ -65,6 +66,12 @@ function Home() {
     queryFn: () => fetchTopChampionMasteriesByPuuid({ platformRegion, puuid: accountQuery.data.puuid, count: 3 }),
     enabled: Boolean(accountQuery.data?.puuid),
     retry: false,
+  });
+
+  const championMapQuery = useQuery({
+    queryKey: ['home.championIdToNameMap'],
+    queryFn: () => fetchChampionIdToNameMap(),
+    staleTime: 1000 * 60 * 60 * 12,
   });
 
   function onSearch() {
@@ -137,7 +144,7 @@ function Home() {
               <Box>
                 {topMasteriesQuery.data.slice(0, 3).map((m) => (
                   <Typography key={m.championId} variant="body2">
-                    Champion {m.championId} · Level {m.championLevel} · {m.championPoints.toLocaleString()} pts
+                    {(championMapQuery.data?.map?.[m.championId] || `Champion ${m.championId}`)} · Level {m.championLevel} · {m.championPoints.toLocaleString()} pts
                   </Typography>
                 ))}
               </Box>

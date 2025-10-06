@@ -10,3 +10,13 @@ export default async function buildFetch(url, options) {
   }
   return res.json();
 }
+
+// Public fetch for endpoints that do not require Riot headers (e.g., Data Dragon)
+export async function publicFetch(url, options) {
+  const res = await fetch(url, { ...options });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Public API ${res.status}: ${text || res.statusText}`);
+  }
+  return res.json();
+}

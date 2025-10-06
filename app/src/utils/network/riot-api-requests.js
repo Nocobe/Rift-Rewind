@@ -1,4 +1,4 @@
-import buildFetch from './build-fetch';
+import buildFetch, { publicFetch } from './build-fetch';
 
 const PLATFORM_REGION_TO_REGIONAL_ROUTE = {
     na1: 'americas',
@@ -59,6 +59,25 @@ async function fetchTopChampionMasteriesByPuuid({ platformRegion, puuid, count =
     return res; // array of ChampionMasteryDTO
 }
 
+// Data Dragon: champion static data to map numeric championId -> champion name
+async function fetchChampionIdToNameMap() {
+    // versions.json returns a list with latest first
+    const versionsUrl = 'https://ddragon.leagueoflegends.com/api/versions.json';
+    const versionsRes = await publicFetch(versionsUrl, {});
+    const latestVersion = Array.isArray(versionsRes) && versionsRes.length > 0 ? versionsRes[0] : '14.1.1';
+    const champsUrl = `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/data/en_US/champion.json`;
+    const champsRes = await publicFetch(champsUrl, {});
+    const data = champsRes && champsRes.data ? champsRes.data : {};
+    const idToName = {};
+    for (const key in data) {
+        const champ = data[key];
+        if (champ && champ.key && champ.name) {
+            idToName[Number(champ.key)] = champ.name;
+        }
+    }
+    return { version: latestVersion, map: idToName };
+}
+
 export { 
   PLATFORM_REGION_TO_REGIONAL_ROUTE,
   fetchAccountByRiotId, 
@@ -67,4 +86,5 @@ export {
   fetchMatchById,
   fetchMatchTimelineById,
   fetchTopChampionMasteriesByPuuid,
+  fetchChampionIdToNameMap,
 };
